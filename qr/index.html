@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Jai Chan · QR Cards</title>
+<meta name="robots" content="noindex">
+<link rel="stylesheet" href="../assets/style.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+.bar{max-width:900px;margin:16px auto;padding:0 16px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.bar input{flex:1;min-width:240px;padding:9px;border:1.5px solid var(--line);border-radius:10px;font:inherit}
+.btn{border:0;background:var(--brand-d);color:#fff;border-radius:10px;padding:9px 14px}
+.sheet{display:grid;grid-template-columns:repeat(2,105mm);justify-content:center;gap:0}
+.card{width:105mm;height:148mm;background:#fff;border:1px dashed #d8cfc4;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:10mm;page-break-inside:avoid}
+.card .nick{font-size:26px;font-weight:600;margin:10px 0 2px}
+.card .qr{margin:12px 0}
+.card .l1{font-size:15px;font-weight:600}
+.card .l2{font-size:12px;color:var(--muted);line-height:1.6}
+.card .url{font-size:9px;color:var(--muted);margin-top:6px;word-break:break-all}
+@media print{.bar{display:none}body{background:#fff}.card{border:0.3mm dashed #ccc}@page{size:A4;margin:0}}
+</style>
+</head>
+<body>
+<div class="bar">
+  <span>ลิงก์หน้ารีวิว:</span><input id="base">
+  <button class="btn" id="go">สร้าง QR ใหม่</button>
+  <button class="btn" onclick="window.print()">พิมพ์ (A4, 4 ใบ/หน้า ตัดเป็น A6)</button>
+</div>
+<div class="sheet" id="sheet"></div>
+<script src="../assets/config.js"></script>
+<script src="../assets/common.js"></script>
+<script>
+const $ = id => document.getElementById(id);
+$("base").value = new URL("../review/", location.href).href;
+function build(){
+  const base = $("base").value.trim(); $("sheet").innerHTML = "";
+  window.JC_CONFIG.STAFF.forEach(s => {
+    const url = base + (base.includes("?") ? "&" : "?") + "t=" + s.id;
+    const c = document.createElement("div"); c.className = "card";
+    c.innerHTML = `<div class="brand">Jai Chan</div><div class="av"></div><div class="nick">${s.nick}</div>
+      <div class="qr"></div>
+      <div class="l1">How was your treatment?</div>
+      <div class="l2">บริการเป็นอย่างไรบ้าง? · 服务满意吗？<br>いかがでしたか？ · 서비스는 어떠셨나요?</div>
+      <div class="url">${url}</div>`;
+    c.querySelector(".av").appendChild(JC.avatar(s, false));
+    new QRCode(c.querySelector(".qr"), { text:url, width:180, height:180, colorDark:"#3E2C20", colorLight:"#ffffff", correctLevel:QRCode.CorrectLevel.M });
+    $("sheet").appendChild(c);
+  });
+}
+$("go").onclick = build; build();
+</script>
+</body>
+</html>

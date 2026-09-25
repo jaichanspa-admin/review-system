@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Jai Chan · Review Dashboard</title>
+<meta name="robots" content="noindex">
+<link rel="stylesheet" href="../assets/style.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+body{font-size:15px}
+.wrap{max-width:1200px;margin:0 auto;padding:16px}
+header{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:14px}
+header h1{font-size:20px;margin:0;font-weight:600}
+.live{font-size:12px;color:var(--muted)} .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--good);margin-right:6px;animation:p 2s infinite}
+@keyframes p{50%{opacity:.3}}
+.tabs{display:flex;gap:6px;flex-wrap:wrap}
+.tab{border:1px solid var(--line);background:#fff;border-radius:18px;padding:6px 12px;color:var(--ink)}
+.tab.on{background:var(--brand-d);color:#fff;border-color:var(--brand-d)}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:14px}
+.kpi{background:#fff;border-radius:14px;padding:14px}
+.kpi b{display:block;font-size:26px;font-weight:600;margin-top:4px}
+.kpi span{color:var(--muted);font-size:13px}
+.alert{background:#FBEDE9;border:1px solid #EDC2B6;border-radius:14px;padding:12px 14px;margin-bottom:14px}
+.alert h3{margin:0 0 6px;font-size:15px;color:var(--bad)}
+.alert .it{padding:6px 0;border-top:1px solid #EDC2B6;font-size:14px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
+.sc{background:#fff;border-radius:14px;padding:14px;display:flex;gap:12px;align-items:center;cursor:pointer;border:2px solid transparent}
+.sc:hover{border-color:var(--line)}
+.sc .rank{font-size:13px;color:var(--muted);width:18px}
+.sc .nm{font-weight:600} .sc .sub{font-size:13px;color:var(--muted)}
+.sc .score{margin-left:auto;text-align:right;font-size:22px;font-weight:600}
+.badge{display:inline-block;font-size:11px;padding:2px 8px;border-radius:10px;background:#EFE8E0;color:var(--muted)}
+.cols{display:grid;grid-template-columns:2fr 1fr;gap:14px;margin-top:14px}
+@media(max-width:800px){.cols{grid-template-columns:1fr}}
+.panel{background:#fff;border-radius:14px;padding:14px}
+.panel h2{font-size:16px;margin:0 0 10px}
+.feed .r{border-top:1px solid var(--line);padding:9px 0;font-size:14px}
+.st{color:var(--gold);letter-spacing:1px}
+.muted{color:var(--muted);font-size:13px}
+.flag{color:var(--bad);font-size:12px}
+#pin{max-width:320px;margin:15vh auto;text-align:center;background:#fff;padding:28px;border-radius:18px}
+#pin input{width:100%;font-size:24px;text-align:center;letter-spacing:.3em;padding:10px;border:1.5px solid var(--line);border-radius:12px;margin:14px 0}
+.btn{border:0;background:var(--brand-d);color:#fff;border-radius:12px;padding:10px 16px}
+.btn.ghost{background:#fff;color:var(--brand-d);border:1.5px solid var(--brand-d)}
+#prof{position:fixed;inset:0;background:rgba(40,28,20,.45);display:none;overflow:auto;padding:16px;z-index:9}
+#prof .box{max-width:900px;margin:0 auto;background:var(--bg);border-radius:18px;padding:18px}
+.ph{display:flex;gap:14px;align-items:center;margin-bottom:12px}
+.bar{display:flex;align-items:center;gap:8px;font-size:14px;margin:4px 0}
+.bar i{display:block;height:10px;border-radius:5px;background:var(--brand)}
+.bar i.neg{background:var(--bad)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+@media(max-width:700px){.two{grid-template-columns:1fr}}
+.demo{background:#FFF6DA;border-radius:10px;padding:8px 12px;font-size:13px;margin-bottom:12px}
+@media print{header .tabs,.btn,#main{display:none!important}#prof{position:static;display:block!important;background:none;padding:0}#prof .box{background:#fff}}
+</style>
+</head>
+<body>
+<div id="pin" class="hide">
+  <div class="brand">Jai Chan</div>
+  <h2 style="margin:10px 0 0;font-weight:600">Review Dashboard</h2>
+  <input id="pinIn" type="password" inputmode="numeric" autocomplete="off" placeholder="PIN">
+  <button class="btn" id="pinBtn" style="width:100%">เข้าสู่ระบบ</button>
+  <p class="flag" id="pinErr"></p>
+</div>
+
+<div id="main" class="wrap hide">
+  <div id="demoBar" class="demo hide">โหมดตัวอย่าง: ข้อมูลในหน้านี้สุ่มขึ้นมาเพื่อดูหน้าตา Dashboard เท่านั้น ยังไม่ใช่รีวิวจริง</div>
+  <header>
+    <div><h1>รีวิวการให้บริการ · ใจฉันสปา</h1><div class="live"><span class="dot"></span><span id="upd">กำลังโหลด…</span></div></div>
+    <div class="tabs" id="period"></div>
+  </header>
+  <div class="kpis" id="kpis"></div>
+  <div id="alerts"></div>
+  <div class="panel"><h2>Therapist (เรียงตามคะแนนถ่วงน้ำหนัก)</h2><div class="grid" id="staff"></div></div>
+  <div class="cols">
+    <div class="panel"><h2>คะแนนเฉลี่ยรายวัน</h2><canvas id="trend" height="120"></canvas></div>
+    <div class="panel feed"><h2>รีวิวล่าสุด</h2><div id="feed"></div></div>
+  </div>
+</div>
+
+<div id="prof"><div class="box" id="profBox"></div></div>
+
+<script src="../assets/config.js"></script>
+<script src="../assets/common.js"></script>
+<script>
+(function(){
+const C = window.JC_CONFIG, $ = id => document.getElementById(id);
+const TH = {
+  chips:{technique:"เทคนิคดี",pressure:"น้ำหนักมือพอดี",friendly:"เป็นมิตร",clean:"สะอาด",ontime:"ตรงเวลา",explained:"อธิบายชัดเจน"},
+  services:{headspa:"เฮดสปา",massage:"นวด",body:"ขัด/พอกผิว",facial:"ทรีตเมนต์หน้า",package:"แพ็กเกจ"},
+  rebook:{yes:"จองซ้ำ",maybe:"อาจจะ",no:"ไม่จองซ้ำ"}
+};
+const PERIODS = [["today","วันนี้"],["7d","7 วัน"],["month","เดือนนี้"],["lastmonth","เดือนก่อน"],["all","ทั้งหมด"]];
+const params = new URLSearchParams(location.search);
+const DEMO = params.get("demo") === "1" || C.API_URL.indexOf("PASTE_") === 0;
+let pin = "", period = "7d", reviews = new Map(), lastNow = null, trendChart = null, profCharts = [];
+const staffById = Object.fromEntries(C.STAFF.map(s => [s.id, s]));
+
+// ---------- data ----------
+function demoData(){
+  const out = [], now = Date.now(), chips = C.CHIPS, langs = ["en","zh","ja","ko","th"], ctys = ["CN","JP","KR","TH","US","GB","SG"];
+  C.STAFF.forEach((s, si) => {
+    const base = 4.2 + (si % 5) * 0.15;
+    for (let i = 0; i < 25 + si * 3; i++){
+      const d = new Date(now - Math.random() * 60 * 864e5); d.setHours(11 + Math.floor(Math.random()*10));
+      let st = Math.round(Math.min(5, Math.max(1, base + (Math.random() - .35) * 1.6)));
+      out.push({ id:"d"+si+"_"+i, created:d.toISOString(), updated:d.toISOString(), therapist:s.id, stars:st,
+        chips: chips.filter(() => Math.random() < .3).join(","), rebook: st>=4?"yes":(st==3?"maybe":"no"),
+        service: C.SERVICES[Math.floor(Math.random()*5)], comment: Math.random()<.2 ? (st>=4?"Amazing head spa, very relaxing!":"Pressure was too strong for me.") : "",
+        comment_th: "", lang: langs[i%5], country: ctys[i%7], flag:"", excluded:false });
+    }
+  });
+  return out;
+}
+async function load(full){
+  if (DEMO){ if (!reviews.size) demoData().forEach(r => reviews.set(r.id, r)); lastNow = new Date().toISOString(); return; }
+  const res = await JC.get(full || !lastNow ? { action:"data", pin } : { action:"data", pin, since:lastNow });
+  res.reviews.forEach(r => reviews.set(r.id, r)); lastNow = res.now;
+}
+
+// ---------- helpers ----------
+const bkk = d => new Date(new Date(d).toLocaleString("en-US", { timeZone:"Asia/Bangkok" }));
+function inPeriod(r){
+  const d = bkk(r.created), n = bkk(new Date());
+  const day = x => x.getFullYear()+"-"+x.getMonth()+"-"+x.getDate();
+  if (period === "today") return day(d) === day(n);
+  if (period === "7d") return (n - d) < 7 * 864e5;
+  if (period === "month") return d.getFullYear() === n.getFullYear() && d.getMonth() === n.getMonth();
+  if (period === "lastmonth"){ const m = new Date(n.getFullYear(), n.getMonth()-1, 1); return d.getFullYear()===m.getFullYear() && d.getMonth()===m.getMonth(); }
+  return true;
+}
+const active = () => [...reviews.values()].filter(r => !r.excluded && inPeriod(r));
+const avg = a => a.length ? a.reduce((x,y)=>x+y,0)/a.length : 0;
+const pct = (n,d) => d ? Math.round(n*100/d)+"%" : "–";
+const stars = n => "★".repeat(n) + "☆".repeat(5-n);
+const esc = s => String(s||"").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const fmt = d => bkk(d).toLocaleString("th-TH", { day:"numeric", month:"short", hour:"2-digit", minute:"2-digit" });
+function stats(rows){
+  const s = rows.map(r => Number(r.stars)), rb = rows.filter(r => r.rebook);
+  return { n:rows.length, avg:avg(s), five:s.filter(x=>x===5).length, low:s.filter(x=>x<=2).length,
+           rebookYes: rb.filter(r=>r.rebook==="yes").length, rebookN: rb.length };
+}
+// Bayesian average: กันคนรีวิวน้อยขึ้นอันดับ 1
+function bayes(st, globalAvg){ const m = C.MIN_REVIEWS_FOR_RANK; return (st.avg*st.n + globalAvg*m)/(st.n+m); }
+
+// ---------- render ----------
+function render(){
+  const rows = active(), g = stats(rows);
+  $("kpis").innerHTML = [
+    ["คะแนนเฉลี่ย", g.n ? g.avg.toFixed(2)+" ★" : "–"],
+    ["จำนวนรีวิว", g.n],
+    ["5 ดาว", pct(g.five, g.n)],
+    ["1–2 ดาว", pct(g.low, g.n)],
+    ["อยากจองซ้ำ", pct(g.rebookYes, g.rebookN)]
+  ].map(([k,v]) => `<div class="kpi"><span>${k}</span><b>${v}</b></div>`).join("");
+
+  const lows = rows.filter(r => Number(r.stars) <= 2).sort((a,b) => new Date(b.created)-new Date(a.created));
+  $("alerts").innerHTML = lows.length ? `<div class="alert"><h3>รีวิวที่ต้องติดตาม (${lows.length})</h3>${lows.slice(0,5).map(r =>
+    `<div class="it"><span class="st">${stars(Number(r.stars))}</span> <b>${esc(staffById[r.therapist]?.nick||r.therapist)}</b> · ${fmt(r.created)}
+     ${r.chips?` · ควรปรับ: ${r.chips.split(",").map(c=>TH.chips[c]||c).join(", ")}`:""}
+     ${r.comment?`<div>“${esc(r.comment)}”${r.comment_th?` <span class="muted">(${esc(r.comment_th)})</span>`:""}</div>`:""}</div>`).join("")}</div>` : "";
+
+  const list = C.STAFF.map(s => { const st = stats(rows.filter(r => r.therapist === s.id)); return { s, st, b: st.n ? bayes(st, g.avg || 4.5) : 0 }; })
+    .sort((a,b) => (b.st.n >= C.MIN_REVIEWS_FOR_RANK) - (a.st.n >= C.MIN_REVIEWS_FOR_RANK) || b.b - a.b);
+  $("staff").innerHTML = "";
+  list.forEach((x, i) => {
+    const el = document.createElement("div"); el.className = "sc";
+    const enough = x.st.n >= C.MIN_REVIEWS_FOR_RANK;
+    el.innerHTML = `<div class="rank">${enough ? i+1 : ""}</div><div class="av"></div>
+      <div><div class="nm">${esc(x.s.nick)}</div><div class="sub">${x.st.n} รีวิว · 5★ ${pct(x.st.five,x.st.n)}</div>
+      ${enough ? "" : `<span class="badge">ข้อมูลยังน้อย</span>`}</div>
+      <div class="score">${x.st.n ? x.st.avg.toFixed(2) : "–"}<div class="muted">★</div></div>`;
+    el.querySelector(".av").appendChild(JC.avatar(x.s, true));
+    el.onclick = () => profile(x.s);
+    $("staff").appendChild(el);
+  });
+
+  // daily trend
+  const byDay = {};
+  rows.forEach(r => { const d = bkk(r.created); const k = d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); (byDay[k]=byDay[k]||[]).push(Number(r.stars)); });
+  const days = Object.keys(byDay).sort();
+  if (window.Chart){
+    trendChart && trendChart.destroy();
+    trendChart = new Chart($("trend"), { type:"line", data:{ labels:days.map(d=>d.slice(5)), datasets:[{ label:"คะแนนเฉลี่ย", data:days.map(d=>avg(byDay[d]).toFixed(2)), borderColor:"#6E5646", backgroundColor:"#6E5646", tension:.3, pointRadius:3 }]},
+      options:{ plugins:{legend:{display:false}}, scales:{ y:{ min:1, max:5 } } } });
+  }
+
+  const recent = [...rows].sort((a,b) => new Date(b.created)-new Date(a.created)).slice(0, 15);
+  $("feed").innerHTML = recent.map(r => `<div class="r"><span class="st">${stars(Number(r.stars))}</span> <b>${esc(staffById[r.therapist]?.nick||r.therapist)}</b>
+    <span class="muted">· ${fmt(r.created)} · ${esc(r.country||"")}</span>${r.flag?` <span class="flag">⚑ ${esc(r.flag)}</span>`:""}
+    ${r.comment?`<div>“${esc(r.comment)}”</div>`:""}${r.comment_th?`<div class="muted">${esc(r.comment_th)}</div>`:""}</div>`).join("") || `<p class="muted">ยังไม่มีรีวิวในช่วงนี้</p>`;
+  $("upd").textContent = (DEMO ? "ข้อมูลตัวอย่าง" : "อัปเดตอัตโนมัติทุก " + C.REFRESH_SECONDS + " วินาที") + " · ล่าสุด " + new Date().toLocaleTimeString("th-TH");
+}
+
+function barList(counts, total, neg){
+  const max = Math.max(1, ...Object.values(counts));
+  return Object.entries(counts).sort((a,b)=>b[1]-a[1]).map(([k,v]) =>
+    `<div class="bar"><span style="width:110px">${esc(k)}</span><i class="${neg?"neg":""}" style="width:${Math.round(v/max*140)}px"></i><span class="muted">${v}</span></div>`).join("") || `<p class="muted">—</p>`;
+}
+
+function profile(s){
+  const all = [...reviews.values()].filter(r => r.therapist === s.id);
+  const rows = all.filter(r => !r.excluded && inPeriod(r)), st = stats(rows);
+  const loved = {}, better = {}, svc = {}, cty = {};
+  rows.forEach(r => {
+    (r.chips ? r.chips.split(",") : []).forEach(c => { const t = Number(r.stars) >= 4 ? loved : better; const k = TH.chips[c]||c; t[k] = (t[k]||0)+1; });
+    if (r.service){ const k = TH.services[r.service]||r.service; (svc[k]=svc[k]||[]).push(Number(r.stars)); }
+    if (r.country) cty[r.country] = (cty[r.country]||0)+1;
+  });
+  const svcAvg = Object.fromEntries(Object.entries(svc).map(([k,a]) => [k+" ("+a.length+")", Number(avg(a).toFixed(2))]));
+  const pLabel = PERIODS.find(p => p[0]===period)[1];
+  $("profBox").innerHTML = `
+    <div class="ph"><div id="pav"></div><div><h2 style="margin:0">${esc(s.nick)} <span class="muted">#${s.id}</span></h2>
+      <div class="muted">ช่วง: ${pLabel} · ${st.n} รีวิว</div></div>
+      <div style="margin-left:auto;display:flex;gap:8px"><button class="btn ghost" onclick="window.print()">พิมพ์ใบประเมิน</button><button class="btn" id="close">ปิด</button></div></div>
+    <div class="kpis">${[["คะแนนเฉลี่ย", st.n?st.avg.toFixed(2)+" ★":"–"],["5 ดาว",pct(st.five,st.n)],["1–2 ดาว",pct(st.low,st.n)],["อยากจองซ้ำ",pct(st.rebookYes,st.rebookN)]]
+      .map(([k,v])=>`<div class="kpi"><span>${k}</span><b>${v}</b></div>`).join("")}</div>
+    <div class="panel"><h2>แนวโน้มรายสัปดาห์ (12 สัปดาห์)</h2><canvas id="wk" height="90"></canvas></div>
+    <div class="two">
+      <div class="panel"><h2>จุดแข็ง (ลูกค้า 4–5★ เลือก)</h2>${barList(loved)}</div>
+      <div class="panel"><h2>จุดที่ควรพัฒนา (ลูกค้า 1–3★ เลือก)</h2>${barList(better, 0, true)}</div>
+      <div class="panel"><h2>คะแนนเฉลี่ยตามบริการ</h2>${barList(svcAvg)}</div>
+      <div class="panel"><h2>ลูกค้าตามประเทศ</h2>${barList(cty)}</div>
+    </div>
+    <div class="panel feed" style="margin-top:12px"><h2>ความคิดเห็นทั้งหมด</h2>
+      ${all.filter(inPeriod).sort((a,b)=>new Date(b.created)-new Date(a.created)).map(r => `<div class="r" style="${r.excluded?"opacity:.5":""}">
+        <span class="st">${stars(Number(r.stars))}</span> <span class="muted">${fmt(r.created)} · ${esc(r.country||"")} · ${esc(TH.services[r.service]||"")} · ${esc(TH.rebook[r.rebook]||"")}</span>
+        ${r.flag?` <span class="flag">⚑ ${esc(r.flag)}</span>`:""}
+        ${r.comment?`<div>“${esc(r.comment)}”</div>`:""}${r.comment_th?`<div class="muted">${esc(r.comment_th)}</div>`:""}
+        ${DEMO?"":`<button class="btn ghost" style="padding:3px 10px;font-size:12px;margin-top:4px" data-id="${esc(r.id)}" data-ex="${r.excluded?0:1}">${r.excluded?"นับรีวิวนี้":"ไม่นับรีวิวนี้"}</button>`}
+        ${r.excluded&&r.exclude_reason?`<div class="muted">เหตุผลที่ไม่นับ: ${esc(r.exclude_reason)}</div>`:""}</div>`).join("") || `<p class="muted">—</p>`}
+    </div>`;
+  $("pav").appendChild(JC.avatar(s));
+  $("prof").style.display = "block";
+  $("close").onclick = () => { $("prof").style.display = "none"; };
+  $("profBox").querySelectorAll("button[data-id]").forEach(b => b.onclick = async () => {
+    const ex = b.dataset.ex === "1"; const reason = ex ? prompt("เหตุผลที่ไม่นับรีวิวนี้ (เช่น ไม่เกี่ยวกับพนักงาน)") : "";
+    if (ex && reason === null) return;
+    await JC.post({ action:"exclude", pin, id:b.dataset.id, excluded:ex, reason });
+    const r = reviews.get(b.dataset.id); r.excluded = ex; r.exclude_reason = reason; render(); profile(s);
+  });
+  // weekly trend over last 12 weeks, independent of period filter
+  profCharts.forEach(c => c.destroy()); profCharts = [];
+  const wk = [], now = Date.now();
+  for (let i = 11; i >= 0; i--){
+    const from = now - (i+1)*7*864e5, to = now - i*7*864e5;
+    const a = all.filter(r => !r.excluded && +new Date(r.created) >= from && +new Date(r.created) < to).map(r => Number(r.stars));
+    wk.push({ l: new Date(to).toLocaleDateString("th-TH",{day:"numeric",month:"short"}), v: a.length ? avg(a).toFixed(2) : null, n:a.length });
+  }
+  if (window.Chart) profCharts.push(new Chart($("wk"), { type:"line", data:{ labels:wk.map(w=>w.l), datasets:[{ data:wk.map(w=>w.v), borderColor:"#6E5646", backgroundColor:"#6E5646", spanGaps:true, tension:.3 }]},
+    options:{ plugins:{legend:{display:false}, tooltip:{callbacks:{afterLabel:c=>wk[c.dataIndex].n+" รีวิว"}}}, scales:{ y:{min:1,max:5} } } }));
+}
+
+// ---------- boot ----------
+PERIODS.forEach(([k,l]) => { const b = document.createElement("button"); b.className = "tab"+(k===period?" on":""); b.textContent = l;
+  b.onclick = () => { period = k; document.querySelectorAll(".tab").forEach(x=>x.classList.remove("on")); b.classList.add("on"); render(); }; $("period").appendChild(b); });
+
+async function start(){
+  try { await load(true); } catch(e){ $("pinErr").textContent = "PIN ไม่ถูกต้อง หรือเชื่อมต่อไม่ได้"; $("pin").classList.remove("hide"); return; }
+  try { sessionStorage.setItem("jc_pin", pin); } catch(e){}
+  $("pin").classList.add("hide"); $("main").classList.remove("hide"); if (DEMO) $("demoBar").classList.remove("hide");
+  render();
+  setInterval(async () => { try { await load(false); render(); } catch(e){ $("upd").textContent = "เชื่อมต่อไม่ได้ กำลังลองใหม่…"; } }, C.REFRESH_SECONDS * 1000);
+}
+$("pinBtn").onclick = () => { pin = $("pinIn").value.trim(); start(); };
+$("pinIn").onkeydown = e => { if (e.key === "Enter") $("pinBtn").click(); };
+try { pin = sessionStorage.getItem("jc_pin") || ""; } catch(e){}
+if (DEMO || pin) start(); else $("pin").classList.remove("hide");
+})();
+</script>
+</body>
+</html>

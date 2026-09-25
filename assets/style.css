@@ -1,0 +1,8 @@
+:root{--bg:#F5F1EC;--card:#FFFFFF;--ink:#3E2C20;--muted:#8C7A6B;--brand:#A08B78;--brand-d:#6E5646;--line:#E6DDD3;--gold:#E0A82E;--bad:#C0533A;--good:#4F8A5B}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"Noto Sans Thai","Noto Sans",system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-tap-highlight-color:transparent}
+button{font:inherit;cursor:pointer}
+.brand{letter-spacing:.35em;font-size:13px;color:var(--brand);text-transform:uppercase;text-align:center}
+.avatar{width:120px;height:120px;border-radius:50%;object-fit:cover;background:var(--brand);color:#fff;display:flex;align-items:center;justify-content:center;font-size:48px;margin:0 auto;border:4px solid #fff;box-shadow:0 4px 16px rgba(62,44,32,.12)}
+.avatar.sm{width:56px;height:56px;font-size:22px;border-width:2px}
+.hide{display:none!important}
