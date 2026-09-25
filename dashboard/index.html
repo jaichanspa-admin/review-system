@@ -57,7 +57,7 @@ header h1{font-size:20px;margin:0;font-weight:600}
 </head>
 <body>
 <div id="pin" class="hide">
-  <div class="brand">Jai Chan</div>
+  <img class="logo" src="../assets/logo.png" alt="Jai Chan" style="width:140px;margin:0 auto">
   <h2 style="margin:10px 0 0;font-weight:600">Review Dashboard</h2>
   <input id="pinIn" type="password" inputmode="numeric" autocomplete="off" placeholder="PIN">
   <button class="btn" id="pinBtn" style="width:100%">เข้าสู่ระบบ</button>
@@ -67,7 +67,7 @@ header h1{font-size:20px;margin:0;font-weight:600}
 <div id="main" class="wrap hide">
   <div id="demoBar" class="demo hide">โหมดตัวอย่าง: ข้อมูลในหน้านี้สุ่มขึ้นมาเพื่อดูหน้าตา Dashboard เท่านั้น ยังไม่ใช่รีวิวจริง</div>
   <header>
-    <div><h1>รีวิวการให้บริการ · ใจฉันสปา</h1><div class="live"><span class="dot"></span><span id="upd">กำลังโหลด…</span></div></div>
+    <div style="display:flex;gap:12px;align-items:center"><img class="logo" src="../assets/logo.png" alt="Jai Chan" style="width:84px"><div><h1>รีวิวการให้บริการ · ใจฉันสปา</h1><div class="live"><span class="dot"></span><span id="upd">กำลังโหลด…</span></div></div></div>
     <div class="tabs" id="period"></div>
   </header>
   <div class="kpis" id="kpis"></div>
@@ -91,6 +91,7 @@ const TH = {
   services:{headspa:"เฮดสปา",massage:"นวด",body:"ขัด/พอกผิว",facial:"ทรีตเมนต์หน้า",package:"แพ็กเกจ"},
   rebook:{yes:"จองซ้ำ",maybe:"อาจจะ",no:"ไม่จองซ้ำ"}
 };
+const CNAME = Object.fromEntries(C.COUNTRIES);
 const PERIODS = [["today","วันนี้"],["7d","7 วัน"],["month","เดือนนี้"],["lastmonth","เดือนก่อน"],["all","ทั้งหมด"]];
 const params = new URLSearchParams(location.search);
 const DEMO = params.get("demo") === "1" || C.API_URL.indexOf("PASTE_") === 0;
@@ -188,7 +189,7 @@ function render(){
 
   const recent = [...rows].sort((a,b) => new Date(b.created)-new Date(a.created)).slice(0, 15);
   $("feed").innerHTML = recent.map(r => `<div class="r"><span class="st">${stars(Number(r.stars))}</span> <b>${esc(staffById[r.therapist]?.nick||r.therapist)}</b>
-    <span class="muted">· ${fmt(r.created)} · ${esc(r.country||"")}</span>${r.flag?` <span class="flag">⚑ ${esc(r.flag)}</span>`:""}
+    <span class="muted">· ${fmt(r.created)} · ${esc(CNAME[r.country]||r.country||"")}</span>${r.flag?` <span class="flag">⚑ ${esc(r.flag)}</span>`:""}
     ${r.comment?`<div>“${esc(r.comment)}”</div>`:""}${r.comment_th?`<div class="muted">${esc(r.comment_th)}</div>`:""}</div>`).join("") || `<p class="muted">ยังไม่มีรีวิวในช่วงนี้</p>`;
   $("upd").textContent = (DEMO ? "ข้อมูลตัวอย่าง" : "อัปเดตอัตโนมัติทุก " + C.REFRESH_SECONDS + " วินาที") + " · ล่าสุด " + new Date().toLocaleTimeString("th-TH");
 }
@@ -206,7 +207,7 @@ function profile(s){
   rows.forEach(r => {
     (r.chips ? r.chips.split(",") : []).forEach(c => { const t = Number(r.stars) >= 4 ? loved : better; const k = TH.chips[c]||c; t[k] = (t[k]||0)+1; });
     if (r.service){ const k = TH.services[r.service]||r.service; (svc[k]=svc[k]||[]).push(Number(r.stars)); }
-    if (r.country) cty[r.country] = (cty[r.country]||0)+1;
+    if (r.country){ const k = CNAME[r.country] || r.country; cty[k] = (cty[k]||0)+1; }
   });
   const svcAvg = Object.fromEntries(Object.entries(svc).map(([k,a]) => [k+" ("+a.length+")", Number(avg(a).toFixed(2))]));
   const pLabel = PERIODS.find(p => p[0]===period)[1];
@@ -225,7 +226,7 @@ function profile(s){
     </div>
     <div class="panel feed" style="margin-top:12px"><h2>ความคิดเห็นทั้งหมด</h2>
       ${all.filter(inPeriod).sort((a,b)=>new Date(b.created)-new Date(a.created)).map(r => `<div class="r" style="${r.excluded?"opacity:.5":""}">
-        <span class="st">${stars(Number(r.stars))}</span> <span class="muted">${fmt(r.created)} · ${esc(r.country||"")} · ${esc(TH.services[r.service]||"")} · ${esc(TH.rebook[r.rebook]||"")}</span>
+        <span class="st">${stars(Number(r.stars))}</span> <span class="muted">${fmt(r.created)} · ${esc(CNAME[r.country]||r.country||"")} · ${esc(TH.services[r.service]||"")} · ${esc(TH.rebook[r.rebook]||"")}</span>
         ${r.flag?` <span class="flag">⚑ ${esc(r.flag)}</span>`:""}
         ${r.comment?`<div>“${esc(r.comment)}”</div>`:""}${r.comment_th?`<div class="muted">${esc(r.comment_th)}</div>`:""}
         ${DEMO?"":`<button class="btn ghost" style="padding:3px 10px;font-size:12px;margin-top:4px" data-id="${esc(r.id)}" data-ex="${r.excluded?0:1}">${r.excluded?"นับรีวิวนี้":"ไม่นับรีวิวนี้"}</button>`}

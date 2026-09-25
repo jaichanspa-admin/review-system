@@ -38,10 +38,10 @@ function build(){
   window.JC_CONFIG.STAFF.forEach(s => {
     const url = base + (base.includes("?") ? "&" : "?") + "t=" + s.id;
     const c = document.createElement("div"); c.className = "card";
-    c.innerHTML = `<div class="brand">Jai Chan</div><div class="av"></div><div class="nick">${s.nick}</div>
+    c.innerHTML = `<img class="logo" src="../assets/logo.png" alt="Jai Chan" style="width:34mm;margin-bottom:4mm"><div class="av"></div><div class="nick">${s.nick}</div>
       <div class="qr"></div>
       <div class="l1">How was your treatment?</div>
-      <div class="l2">บริการเป็นอย่างไรบ้าง? · 服务满意吗？<br>いかがでしたか？ · 서비스는 어떠셨나요?</div>
+      <div class="l2">บริการเป็นอย่างไรบ้าง? · 服务满意吗？<br>いかがでしたか？ · 서비스는 어떠셨나요?<br><span dir="rtl">كيف كانت تجربتك؟</span></div>
       <div class="url">${url}</div>`;
     c.querySelector(".av").appendChild(JC.avatar(s, false));
     new QRCode(c.querySelector(".qr"), { text:url, width:180, height:180, colorDark:"#3E2C20", colorLight:"#ffffff", correctLevel:QRCode.CorrectLevel.M });

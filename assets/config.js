@@ -29,6 +29,11 @@ window.JC_CONFIG = {
     ["TH","🇹🇭 Thailand"],["CN","🇨🇳 China"],["JP","🇯🇵 Japan"],["KR","🇰🇷 South Korea"],
     ["TW","🇹🇼 Taiwan"],["HK","🇭🇰 Hong Kong"],["SG","🇸🇬 Singapore"],["MY","🇲🇾 Malaysia"],
     ["IN","🇮🇳 India"],["RU","🇷🇺 Russia"],["US","🇺🇸 USA"],["GB","🇬🇧 UK"],
-    ["AU","🇦🇺 Australia"],["DE","🇩🇪 Germany"],["FR","🇫🇷 France"],["OT","🌏 Other"]
+    ["AU","🇦🇺 Australia"],["DE","🇩🇪 Germany"],["FR","🇫🇷 France"],
+    ["AE","🇦🇪 UAE"],["SA","🇸🇦 Saudi Arabia"],["QA","🇶🇦 Qatar"],["KW","🇰🇼 Kuwait"],
+    ["OM","🇴🇲 Oman"],["BH","🇧🇭 Bahrain"],["EG","🇪🇬 Egypt"],["JO","🇯🇴 Jordan"],
+    ["LB","🇱🇧 Lebanon"],["IQ","🇮🇶 Iraq"],["IL","🇮🇱 Israel"],["TR","🇹🇷 Türkiye"],
+    ["VN","🇻🇳 Vietnam"],["ID","🇮🇩 Indonesia"],["PH","🇵🇭 Philippines"],["IT","🇮🇹 Italy"],
+    ["NL","🇳🇱 Netherlands"],["CA","🇨🇦 Canada"],["OT","🌏 Other"]
   ]
 };
