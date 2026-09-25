@@ -15,7 +15,7 @@ window.JC_CONFIG = {
     { id: "680606",  nick: "Noi" },
     { id: "680609",  nick: "Namhom" },
     { id: "680613",  nick: "Sui" },
-    { id: "6902049", nick: "Mena" },   // TODO: ยืนยันรหัส (7 หลัก)
+    { id: "6902055", nick: "Mena" },
     { id: "690627",  nick: "Veena" },
     { id: "690637",  nick: "Pook" },
     { id: "690630",  nick: "Kai" },

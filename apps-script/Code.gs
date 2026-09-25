@@ -31,7 +31,7 @@ function setup(){
   sheet_(SHEET_REVIEWS, HEADERS);
   const st = sheet_(SHEET_STAFF, ["id","nick","full_name","active"]);
   if (st.getLastRow() < 2){
-    [["680603","Nicky"],["680602","Fon"],["680606","Noi"],["680609","Namhom"],["680613","Sui"],["6902049","Mena"],
+    [["680603","Nicky"],["680602","Fon"],["680606","Noi"],["680609","Namhom"],["680613","Sui"],["6902055","Mena"],
      ["690627","Veena"],["690637","Pook"],["690630","Kai"],["690635","Kookkai"],["690632","Kwan"]]
       .forEach(r => st.appendRow([r[0], r[1], "", true]));
     st.getRange("A2:A").setNumberFormat("@");
