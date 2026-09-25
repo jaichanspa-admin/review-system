@@ -3,6 +3,7 @@
  * วิธีติดตั้งดูใน README.md ขั้นตอนที่ 2
  *
  * Script Properties ที่ต้องตั้ง (Project Settings > Script properties):
+ *   SHEET_ID           รหัส Google Sheet (ส่วนระหว่าง /d/ กับ /edit ใน URL) — จำเป็นถ้าสคริปต์ไม่ได้สร้างจากเมนูของชีต
  *   MANAGER_PIN        PIN สำหรับเปิด Dashboard (เช่น 6 หลัก)
  *   LINE_TOKEN         Channel access token ของ LINE Messaging API (ไม่บังคับ)
  *   LINE_TO            groupId / userId ที่จะรับแจ้งเตือน (ไม่บังคับ)
@@ -20,7 +21,8 @@ function props_(){ return PropertiesService.getScriptProperties(); }
 function json_(o){ return ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON); }
 
 function sheet_(name, headers){
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const sid = props_().getProperty("SHEET_ID");
+  const ss = sid ? SpreadsheetApp.openById(sid) : SpreadsheetApp.getActiveSpreadsheet();
   let sh = ss.getSheetByName(name);
   if (!sh){ sh = ss.insertSheet(name); if (headers) sh.appendRow(headers); sh.setFrozenRows(1); }
   return sh;
