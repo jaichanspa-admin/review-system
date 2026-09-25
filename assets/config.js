@@ -3,7 +3,7 @@
 // 2) ใส่ลิงก์ Google Review ของร้าน (ถ้ามี) เพื่อให้ลูกค้า 5 ดาวรีวิวต่อ
 window.JC_CONFIG = {
   API_URL: "https://script.google.com/macros/s/AKfycbyw_kLALFg2y3P6pWyXb6h5GkkfPYxmHLFdsnhy8OsNhxr4tDdnV9smrRBf1plDvFZk/exec",
-  GOOGLE_REVIEW_URL: "",
+  GOOGLE_REVIEW_URL: "https://g.page/r/CT2p-eXEVgwZEAE/review",
   REFRESH_SECONDS: 30,
   MIN_REVIEWS_FOR_RANK: 10,
 
