@@ -2,7 +2,7 @@
 // 1) วาง URL ของ Google Apps Script Web App (ดู README ขั้นตอนที่ 2)
 // 2) ใส่ลิงก์ Google Review ของร้าน (ถ้ามี) เพื่อให้ลูกค้า 5 ดาวรีวิวต่อ
 window.JC_CONFIG = {
-  API_URL: "PASTE_YOUR_APPS_SCRIPT_WEB_APP_URL_HERE",
+  API_URL: "https://script.google.com/macros/s/AKfycbyw_kLALFg2y3P6pWyXb6h5GkkfPYxmHLFdsnhy8OsNhxr4tDdnV9smrRBf1plDvFZk/exec",
   GOOGLE_REVIEW_URL: "",
   REFRESH_SECONDS: 30,
   MIN_REVIEWS_FOR_RANK: 10,
